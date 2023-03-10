@@ -26,7 +26,7 @@ const About = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         setInputBool(true);
-        console.log(e.target[0].value)
+        // console.log(e.target[0].value)
         setState(e.target[0].value)
         setInputBool(false);
     }
