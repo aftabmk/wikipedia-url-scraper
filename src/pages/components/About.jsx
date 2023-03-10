@@ -1,21 +1,22 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { useMutation } from "react-query";
+import { useQuery } from "react-query";
 
-const url = 'https://en.wikipedia.org/wiki/Redux_(JavaScript_library)'
 const About = () => {
-    const [state, setState] = useState(url)
+    const [state, setState] = useState(null)
     const [inputBool, setInputBool] = useState(false)
 
     const fetch = async () => {
-        const url = `https://v1.up.railway.app/search?url=${state}`
-        const res = await axios(url, { method: 'GET' })
-        return res
+        if(state !== null ){
+            const url = `https://v1.up.railway.app/search?url=${state}`
+            const res = await axios(url, { method: 'GET' })
+            return res
+        }
     }
 
-    const { data: fetchData, error, isLoading , mutate} = useMutation(fetch)
+    const { data: fetchData, error, isLoading} = useQuery(["fetch",state],()=>fetch())
 
-    if (fetchData) console.log(fetchData.data.data)
+    if (fetchData) console.log(fetchData)
 
     useEffect(() => {
         const form = document.querySelector("form");
@@ -25,7 +26,7 @@ const About = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         setInputBool(true);
-        mutate()
+        console.log(e.target[0].value)
         setState(e.target[0].value)
         setInputBool(false);
     }
@@ -38,6 +39,7 @@ const About = () => {
     return (
         <>
             <div className="container">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Wikipedia_svg_logo.svg/1024px-Wikipedia_svg_logo.svg.png" alt="img" />
                 <form >
                     <div className="finder" onSubmit={handleSubmit}>
                         <div className="finder__outer">
@@ -80,7 +82,7 @@ const About = () => {
                     <div className="table-content">
                         <table cellPadding="0" cellSpacing="0" border="0">
                             <tbody>
-                                {fetchData && fetchData.data.data.map((element, index) =>
+                                {fetchData && fetchData?.data?.data.map((element, index) =>
                                 (<tr key={index}>
                                     <td style={{ width: '10%' }}>{index + 1}</td>
                                     <td style={{ width: '25%' }}>{heading(element?.OriginalUrl)}</td>
@@ -95,7 +97,7 @@ const About = () => {
                         </table>
                     </div>
                     <div>
-                        <p>Total number of links are {fetchData && fetchData.data.data.length} having rank* property</p>
+                        <p>Total number of links are {fetchData && fetchData?.data?.data.length} having rank* property</p>
                     </div>
                 </section>
             </div>
